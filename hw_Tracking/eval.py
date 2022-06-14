@@ -3,13 +3,14 @@ import numpy
 
 
 def evalMatch(templateRecList, imgRecList, width=0, height=0):
+    # 参数：templateRecList：匹配框的坐标，imgRecList：真实框的坐标列表
     # 跟对的帧数列表
     # TargetRec为(左上角x,y,宽，高)
     # templateRec为(左上角x,y)
     width = int(imgRecList[0][2])
     height = int(imgRecList[0][3])
     rightList = []
-    for i in range(5):
+    for i in range(len(imgRecList)):
         px1, py1, px2, py2 = int(templateRecList[i][0]), int(templateRecList[i][1]), int(templateRecList[i][0]) + width, \
                              int(templateRecList[i][1]) + height
         # print("预测框P的坐标是：({}, {}, {}, {})".format(px1, py1, px2, py2))
@@ -36,7 +37,8 @@ def evalMatch(templateRecList, imgRecList, width=0, height=0):
         w = x2 - x1
         h = y2 - y1
         if w <= 0 or h <= 0:
-            return 0
+            rightList.append(i)
+            continue
 
         area = w * h  # G∩P的面积
         # print("G∩P的面积是：{}".format(area))
@@ -46,20 +48,20 @@ def evalMatch(templateRecList, imgRecList, width=0, height=0):
         if IoU >= 0.5:
             rightList.append(i)
         # print("IoU是：{}".format(IoU))
-    print(rightList)
-    rightList = a1 = [1, 2, 4, 5, 7, 9, 13, 45, 67, 88, 89, 90, 100, 111, 222, 223, 224, 225, 900, 899]
+    # print(rightList)
+    t1 = []
     seriesRightList = []
+    for x in rightList:
+        t1.append(x)
+        if x + 1 not in rightList:
+            seriesRightList.append([t1[0], t1[-1]])
+            print(t1[0], t1[-1])
+            t1 = []
     # 取出连续跟对列表
-    for i in sorted(set(rightList)):
-        if len(seriesRightList) == 0 or seriesRightList[-1] + 1 == i:
-            seriesRightList.append(i)  # 入栈
-        else:
-            if len(seriesRightList) >= 2:
-                print(seriesRightList)
-            seriesRightList = []  # 清空
-            seriesRightList.append(i)  # 入栈
-    # 最后一轮，需判断下
-    if len(seriesRightList) >= 2:
-        print(seriesRightList)
-    
+    print(seriesRightList)
+    seriesRightNum = 0
+    for i in seriesRightList:
+        seriesRightNum += (i[1] - i[0] + 1)
+    print("连续跟对的帧数是：{}".format(seriesRightNum))
+
     pass
