@@ -52,8 +52,11 @@ def start(imgRecList, imgFiles, templateImg, function='ssd'):
     pass
 
 
-def visible(imgFiles, imgRecList, width=0, height=0):
-    resultPath = './BlurCar2/result_ssd.txt'
+def visible(imgFiles, imgRecList, width=0, height=0, function='ssd'):
+    if function == 'ssd':
+        resultPath = './BlurCar2/result_ssd.txt'
+    elif function == 'ncc':
+        resultPath = './BlurCar2/result_ncc.txt'
     templateList = []
     width = int(imgRecList[0][2])
     height = int(imgRecList[0][3])
@@ -85,6 +88,6 @@ def visible(imgFiles, imgRecList, width=0, height=0):
 
 if __name__ == '__main__':
     imgRecList, imgFiles, templateImg = readImgFile()
-    width, height = start(imgRecList, imgFiles, templateImg, function='ncc')
-    # templateList = visible(imgFiles, imgRecList)
-    # eval.evalMatch(templateList, imgRecList)
+    # width, height = start(imgRecList, imgFiles, templateImg, function='ncc')
+    templateList = visible(imgFiles, imgRecList)
+    eval.evalMatch(templateList, imgRecList)
