@@ -3,6 +3,7 @@ import os
 import cv2
 import numpy as np
 import T_SSD
+import T_NCC
 import eval
 
 imgPath = './BlurCar2/img/'
@@ -36,15 +37,15 @@ def start(imgRecList, imgFiles, templateImg, function='ssd'):
             targetImg = cv2.imread(imgPath + imgFiles[i])  # 目标图
             match_x, match_y = T_SSD.img_ssd(croppedTemplateImg, targetImg)
             print('match_x:', match_x, 'match_y:', match_y, "第", i + 1, "张图片")
-            with open('./BlurCar2/result.txt', 'a') as f:
+            with open('./BlurCar2/result_ssd.txt', 'a') as f:
                 f.write(str(match_x) + '\t' + str(match_y) + '\n')
         return width, height
     elif function == 'ncc':
         for i in range(0, len(imgFiles)):
             targetImg = cv2.imread(imgPath + imgFiles[i])  # 目标图
-            match_x, match_y = T_SSD.img_ncc(croppedTemplateImg, targetImg)
+            match_x, match_y = T_NCC.img_ncc(croppedTemplateImg, targetImg)
             print('match_x:', match_x, 'match_y:', match_y, "第", i + 1, "张图片")
-            with open('./BlurCar2/result.txt', 'a') as f:
+            with open('./BlurCar2/result_ncc.txt', 'a') as f:
                 f.write(str(match_x) + '\t' + str(match_y) + '\n')
         return width, height
 
@@ -52,7 +53,7 @@ def start(imgRecList, imgFiles, templateImg, function='ssd'):
 
 
 def visible(imgFiles, imgRecList, width=0, height=0):
-    resultPath = './BlurCar2/result.txt'
+    resultPath = './BlurCar2/result_ssd.txt'
     templateList = []
     width = int(imgRecList[0][2])
     height = int(imgRecList[0][3])
@@ -62,7 +63,7 @@ def visible(imgFiles, imgRecList, width=0, height=0):
             line = line.split('\t')
             templateList.append(line)
             # print(line)
-    for i in range(0, 5):
+    for i in range(0, len(imgFiles)):
         targetImg = cv2.imread(imgPath + imgFiles[i])
         targetImgRec = imgRecList[i]
         cv2.rectangle(targetImg, (int(targetImgRec[0]), int(targetImgRec[1])),
@@ -84,6 +85,6 @@ def visible(imgFiles, imgRecList, width=0, height=0):
 
 if __name__ == '__main__':
     imgRecList, imgFiles, templateImg = readImgFile()
-    # width, height = start(imgRecList, imgFiles, templateImg)
-    templateList = visible(imgFiles, imgRecList)
-    eval.evalMatch(templateList, imgRecList)
+    width, height = start(imgRecList, imgFiles, templateImg, function='ncc')
+    # templateList = visible(imgFiles, imgRecList)
+    # eval.evalMatch(templateList, imgRecList)

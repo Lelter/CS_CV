@@ -19,7 +19,15 @@ def img_ncc(templateImg, targetImg):
     min_res = sys.maxsize
     Best_x = 0
     Best_y = 0
-
-
-    return Best_x, Best_y
+    for i in range(Range_x):
+        for j in range(Range_y):
+            subgraph_img = src_img[i:i + m, j:j + n]
+            res = np.mean(np.multiply((search_img - np.mean(search_img)), (subgraph_img - np.mean(subgraph_img)))) / (
+                        np.std(search_img) * np.std(subgraph_img))  #
+            res=abs(1-res)
+            if res < min_res:
+                min_res = res
+                Best_x = i
+                Best_y = j
+    print(Best_y, Best_x)
     pass
