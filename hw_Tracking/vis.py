@@ -45,7 +45,7 @@ def start(imgRecList, imgFiles, templateImg):
         print('match_x:', match_x, 'match_y:', match_y, "第", i + 1, "张图片")
         with open('./BlurCar2/result.txt', 'a') as f:
             f.write(str(match_x) + '\t' + str(match_y) + '\n')
-        return width, height
+    return width, height
         # cv2.waitKey(0)
         # for imgFile in imgFiles:
         #     img = cv2.imread(imgPath + imgFile)
@@ -65,7 +65,7 @@ def visible(imgFiles, imgRecList, width=0, height=0):
             line = line.split('\t')
             templateList.append(line)
             print(line)
-    for i in range(0, 5):
+    for i in range(0, len(imgFiles)):
         targetImg = cv2.imread(imgPath + imgFiles[i])
         targetImgRec = imgRecList[i]
         cv2.rectangle(targetImg, (int(targetImgRec[0]), int(targetImgRec[1])),
