@@ -5,8 +5,8 @@ import numpy as np
 import T_SSD
 import T_NCC
 import eval
-
-imgPath = './BlurCar2/img/'
+import T_LK
+imgPath = './MountainBike/img/'
 file = './BlurCar2/groundtruth_rect.txt'
 
 
@@ -48,6 +48,9 @@ def start(imgRecList, imgFiles, templateImg, function='ssd'):
             with open('./BlurCar2/result_ncc.txt', 'a') as f:
                 f.write(str(match_x) + '\t' + str(match_y) + '\n')
         return width, height
+    elif function == 'LK':
+        T_LK.T_LK2(imgPath,croppedTemplateImg,templateImgRec)
+        pass
 
     pass
 
@@ -88,6 +91,6 @@ def visible(imgFiles, imgRecList, width=0, height=0, function='ssd'):
 
 if __name__ == '__main__':
     imgRecList, imgFiles, templateImg = readImgFile()
-    # width, height = start(imgRecList, imgFiles, templateImg, function='ncc')
-    templateList = visible(imgFiles, imgRecList)
-    eval.evalMatch(templateList, imgRecList)
+    width, height = start(imgRecList, imgFiles, templateImg, function='LK')
+    # templateList = visible(imgFiles, imgRecList)
+    # eval.evalMatch(templateList, imgRecList)
