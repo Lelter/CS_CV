@@ -5,6 +5,7 @@ import numpy as np
 
 imgPath = './MountainBike/img/'
 file = './MountainBike/groundtruth_rect.txt'
+
 lk_params = dict(winSize=(15, 15),
                  maxLevel=2,
                  criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03))
@@ -18,6 +19,7 @@ feature_params = dict(maxCorners=500,
 def T_LK(imgPath, croppedTemplateImg, templateImgRec):
     track_len = 10
     detect_interval = 5
+    tracks_list=[]
     tracks = []
     frame_idx = 0
     imgRecList = []
@@ -41,7 +43,7 @@ def T_LK(imgPath, croppedTemplateImg, templateImgRec):
             p0r, st, err = cv2.calcOpticalFlowPyrLK(img1, img0, p1, None,
                                                     **lk_params)  # 当前帧跟踪到的角点及图像和前一帧的图像作为输入来找到前一帧的角点位置
             d = abs(p0 - p0r).reshape(-1, 2).max(-1)  # 得到角点回溯与前一帧实际角点的位置变化关系
-            good = d < 1  # 判断d内的值是否小于1，大于1跟踪被认为是错误的跟踪点
+            good = d   # 判断d内的值是否小于1，大于1跟踪被认为是错误的跟踪点
             new_tracks = []
             for tr, (x, y), good_flag in zip(tracks, p1.reshape(-1, 2), good):  # 将跟踪正确的点列入成功跟踪点
                 if not good_flag:
@@ -52,9 +54,10 @@ def T_LK(imgPath, croppedTemplateImg, templateImgRec):
                 new_tracks.append(tr)
                 cv2.circle(vis, (int(x), int(y)), 2, (0, 255, 0), -1)
             tracks = new_tracks
+            tracks_list.append(tracks)
             # cv2.polylines(vis, [np.int32(tr) for tr in tracks], False, (0, 255, 0))  # 以上一振角点为初始点，当前帧跟踪到的点为终点划线
             # draw_str(vis, (20, 20), 'track count: %d' % len(self.tracks))
-        if frame_idx % detect_interval == 0:
+        if frame_idx  == 0:
             mask = np.zeros_like(targetImgGray)
             if i == 1:
                 mask[int(templateImgRec[1]):int(templateImgRec[1]) + int(templateImgRec[3]),
@@ -68,6 +71,7 @@ def T_LK(imgPath, croppedTemplateImg, templateImgRec):
             if p is not None:
                 for x, y in np.float32(p).reshape(-1, 2):
                     tracks.append([(x, y)])
+        tracks_list.append(tracks)
         frame_idx += 1
         preTargetImgGray = targetImgGray
         cv2.imshow('lk_track', vis)
